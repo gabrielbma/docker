@@ -1,0 +1,37 @@
+version: '3'
+services:
+  prometheus_container:
+    image: "prom/prometheus"
+    command: "--config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle"
+    ports:
+     - "9090:9090"
+    links:
+       - prometheus_node_exporter
+    networks:
+      - containers_net
+    volumes:
+     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+     - prometheus_vol:/prometheus
+  grafana_container:
+    image: "grafana/grafana"
+    ports:
+     - "3000:3000"
+    links:
+       - prometheus_container
+    networks:
+      - containers_net
+    volumes:
+      - grafana_vol:/var/lib/grafana
+  prometheus_node_exporter:
+    image: "prom/node-exporter"
+    ports:
+      - "9100:9100"
+    networks:
+      - containers_net
+networks:
+  containers_net:
+    driver: "bridge"
+volumes:
+  grafana_vol:
+  prometheus_vol:
+  
